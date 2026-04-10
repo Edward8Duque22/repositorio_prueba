@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/api/peticion",
+      "source": "/api/:path*",
       "destination": "/index.js"
     }
   ]
