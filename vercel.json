@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "index.js": {
-      "runtime": "vercel-nodejs@latest"
-    }
-  },
   "rewrites": [
     {
       "source": "/peticiones/:match*",
@@ -11,4 +6,3 @@
     }
   ]
 }
-
