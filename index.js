@@ -3,50 +3,43 @@ const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
 
 export default async function handler(req, res) {
-    // Configuración para evitar errores de CORS y métodos
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-    if (req.method === 'OPTIONS') return res.status(200).end();
-
-    const { method, query } = req;
-    const { accion } = query;
+    const { method } = req;
+    const { accion } = req.query;
 
     try {
         await client.connect();
         const db = client.db('archivo_creativo');
         const proyectos = db.collection('proyectos');
 
-        // --- LÓGICA DE LOGIN ---
         if (accion === 'login' && method === 'POST') {
-            // Esta línea asegura que leamos el hash correctamente sin importar cómo llegue
-            const data = req.body;
-            const hashRecibido = typeof data === 'string' ? JSON.parse(data).hash : data.hash;
+            // Leemos el cuerpo de la petición de forma segura
+            let body = req.body;
+            if (typeof body === 'string') body = JSON.parse(body);
 
-            const hashCorrecto = "c0e1cd8fc8386315b37205f95cd4918b8820715968f4b0c6bd910ce0c78045ba"; // 12345
+            const hashEnviado = body.hash;
+            const hashCorrecto = "c0e1cd8fc8386315b37205f95cd4918b8820715968f4b0c6bd910ce0c78045ba";
 
-            if (hashRecibido === hashCorrecto) {
+            if (hashEnviado === hashCorrecto) {
                 return res.status(200).json({ success: true });
             } else {
-                return res.status(401).json({ success: false, msg: "Clave no coincide" });
+                return res.status(401).json({ success: false, error: "Hash incorrecto" });
             }
         }
 
-        // --- OTRAS ACCIONES (Listar, Guardar, Eliminar) ---
         if (accion === 'listar') {
-            const result = await proyectos.find({}).sort({ fecha: -1 }).toArray();
-            return res.status(200).json(result);
+            const data = await proyectos.find({}).sort({ fecha: -1 }).toArray();
+            return res.status(200).json(data);
         }
 
         if (accion === 'guardar' && method === 'POST') {
-            const nuevo = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-            await proyectos.insertOne(nuevo);
+            let body = req.body;
+            if (typeof body === 'string') body = JSON.parse(body);
+            await proyectos.insertOne(body);
             return res.status(200).json({ success: true });
         }
 
         if (accion === 'eliminar' && method === 'DELETE') {
-            await proyectos.deleteOne({ _id: new ObjectId(query.id) });
+            await proyectos.deleteOne({ _id: new ObjectId(req.query.id) });
             return res.status(200).json({ success: true });
         }
 
