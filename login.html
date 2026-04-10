@@ -24,21 +24,21 @@
 
 <script>
     async function validarAcceso() {
-        const pass = document.getElementById('clave').value;
-        const hash = CryptoJS.SHA256(pass).toString();
+    const pass = document.getElementById('clave').value;
+    const hash = CryptoJS.SHA256(pass).toString(); // Encripta la clave
 
-        const res = await fetch('/peticiones?accion=login', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ hash })
-        });
+    const res = await fetch('/peticiones?accion=login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hash: hash })
+    });
 
-        if (res.ok) {
-            localStorage.setItem('admin_auth', 'true');
-            window.location.href = 'admin.html';
-        } else {
-            document.getElementById('form-error').classList.add('show');
-        }
+    if (res.ok) {
+        localStorage.setItem('admin_auth', 'true'); // Guarda el permiso localmente
+        window.location.href = 'admin.html';       // Te redirige
+    } else {
+        alert("Contraseña incorrecta");
+    }
     }
 </script>
 </body>
