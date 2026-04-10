@@ -1,24 +1,32 @@
-// Ahora apuntamos al "rewrite" que definimos en vercel.json
 const API = '/peticiones?accion=';
 
 async function cargarProyectos() {
-    const res = await fetch(`${API}listar`);
-    return await res.json();
+    try {
+        const res = await fetch(`${API}listar`);
+        const proyectos = await res.json();
+        return proyectos;
+    } catch (error) {
+        console.error("Error al cargar:", error);
+        return [];
+    }
 }
 
 async function agregarProyecto() {
+    const titulo = document.getElementById('titulo').value;
+    const fecha = document.getElementById('fecha').value;
     const foto = document.getElementById('foto').files[0];
-    if(!foto) return alert("Sube una imagen");
+
+    if (!titulo || !fecha || !foto) return alert("Faltan datos");
 
     const reader = new FileReader();
     reader.onload = async (e) => {
         const nuevo = {
-            titulo: document.getElementById('titulo').value,
-            fecha:  document.getElementById('fecha').value,
-            img:    e.target.result,
-            repo:   document.getElementById('repo').value || '#',
-            live:   document.getElementById('live').value || '#',
-            desc:   document.getElementById('desc').value
+            titulo,
+            fecha,
+            img: e.target.result,
+            repo: document.getElementById('repo').value || '#',
+            live: document.getElementById('live').value || '#',
+            desc: document.getElementById('desc').value || ''
         };
 
         const res = await fetch(`${API}guardar`, {
@@ -26,9 +34,9 @@ async function agregarProyecto() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(nuevo)
         });
-        
-        if(res.ok) {
-            alert("✓ Cambios guardados en MongoDB y auditados.");
+
+        if (res.ok) {
+            alert("Proyecto guardado directamente en la raíz y MongoDB");
             location.reload();
         }
     };
@@ -36,9 +44,8 @@ async function agregarProyecto() {
 }
 
 async function eliminarProyecto(id) {
-    if (confirm('¿Borrar? Esta acción se registrará en la auditoría.')) {
+    if (confirm('¿Eliminar proyecto?')) {
         await fetch(`${API}eliminar&id=${id}`, { method: 'DELETE' });
         location.reload();
     }
 }
-
