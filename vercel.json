@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/peticiones/:match*",
+      "source": "/peticiones",
       "destination": "/index.js"
     }
   ]
