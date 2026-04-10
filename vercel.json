@@ -1,8 +1,9 @@
 {
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/index.js"
+      "source": "/api/(.*)",
+      "destination": "/index.js",
+      "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"]
     }
   ]
 }
