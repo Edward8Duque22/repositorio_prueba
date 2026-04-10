@@ -2,53 +2,40 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso — Archivo Creativo</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
-<body class="login-page">
-
-<div class="login-card">
-    <div class="login-header">
-        <div class="logo-mark">🔐</div>
-        <h2>Bienvenido</h2>
+<body>
+    <div class="login-card">
+        <h2>Ingresar</h2>
+        <input type="password" id="clave" placeholder="Escribe 12345">
+        <button onclick="validarAcceso()">Entrar</button>
     </div>
-    <div class="form-group">
-        <label>Contraseña</label>
-        <input type="password" id="clave" placeholder="••••••••">
-        <p id="form-error" class="error-msg">Contraseña incorrecta.</p>
-    </div>
-    <button class="btn btn-accent btn-full" onclick="validarAcceso()">Entrar al panel</button>
-</div>
 
-<script>
-    async function validarAcceso() {
-    const pass = document.getElementById('clave').value;
-    if (!pass) return alert("Escribe la clave");
+    <script>
+        async function validarAcceso() {
+            const pass = document.getElementById('clave').value;
+            // Genera el código hash de la clave escrita
+            const hash = CryptoJS.SHA256(pass).toString();
 
-    // Generamos el hash de "12345"
-    const hash = CryptoJS.SHA256(pass).toString();
+            try {
+                const res = await fetch('/api/peticion?accion=login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ hash: hash })
+                });
 
-    try {
-        const res = await fetch('/api/login?accion=login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ hash: hash })
-        });
-
-        if (res.ok) {
-            localStorage.setItem('admin_auth', 'true');
-            window.location.href = 'admin.html';
-        } else {
-            alert("Contraseña incorrecta. Intenta con 12345");
+                if (res.ok) {
+                    localStorage.setItem('admin_auth', 'true');
+                    window.location.href = 'admin.html';
+                } else {
+                    alert("Contraseña incorrecta en el servidor.");
+                }
+            } catch (err) {
+                alert("Error de conexión. Revisa que Vercel esté Online.");
+            }
         }
-    } catch (err) {
-        alert("Error al conectar con el servidor");
-    }
-}
-
-</script>
+    </script>
 </body>
 </html>
-
