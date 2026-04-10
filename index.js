@@ -4,22 +4,17 @@ const client = new MongoClient(uri);
 
 export default async function handler(req, res) {
     const { method, query } = req;
-    const { accion, h } = query; // "h" será el hash que enviamos por la URL
+    const { accion, h } = query;
 
     try {
         await client.connect();
         const db = client.db('archivo_creativo');
         const proyectos = db.collection('proyectos');
 
-        // LOGIN REFORZADO
+        // LOGIN (Usando el método del hash por URL que es más seguro para móvil)
         if (accion === 'login') {
             const hashCorrecto = "c0e1cd8fc8386315b37205f95cd4918b8820715968f4b0c6bd910ce0c78045ba";
-            
-            if (h === hashCorrecto) {
-                return res.status(200).json({ success: true });
-            } else {
-                return res.status(401).json({ success: false });
-            }
+            return res.status(h === hashCorrecto ? 200 : 401).json({ success: h === hashCorrecto });
         }
 
         if (accion === 'listar') {
@@ -33,12 +28,8 @@ export default async function handler(req, res) {
             return res.status(200).json({ success: true });
         }
 
-        if (accion === 'eliminar' && method === 'DELETE') {
-            await proyectos.deleteOne({ _id: new ObjectId(query.id) });
-            return res.status(200).json({ success: true });
-        }
-
+        // ... resto de lógica ...
     } catch (e) {
-        return res.status(500).json({ error: e.message });
+        res.status(500).json({ error: e.message });
     }
 }
