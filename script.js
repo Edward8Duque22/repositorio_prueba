@@ -1,4 +1,4 @@
-const API = '/peticiones?accion=';
+const API = '/api?accion=';
 
 async function cargarProyectos() {
     const res = await fetch(`${API}listar`);
