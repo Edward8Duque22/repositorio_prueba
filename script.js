@@ -1,28 +1,19 @@
 const API = '/peticiones?accion=';
 
 async function cargarProyectos() {
-    try {
-        const res = await fetch(`${API}listar`);
-        const proyectos = await res.json();
-        return proyectos;
-    } catch (error) {
-        console.error("Error al cargar:", error);
-        return [];
-    }
+    const res = await fetch(`${API}listar`);
+    return await res.json();
 }
 
 async function agregarProyecto() {
-    const titulo = document.getElementById('titulo').value;
-    const fecha = document.getElementById('fecha').value;
     const foto = document.getElementById('foto').files[0];
-
-    if (!titulo || !fecha || !foto) return alert("Faltan datos");
+    if(!foto) return alert("Sube una imagen");
 
     const reader = new FileReader();
     reader.onload = async (e) => {
         const nuevo = {
-            titulo,
-            fecha,
+            titulo: document.getElementById('titulo').value,
+            fecha: document.getElementById('fecha').value,
             img: e.target.result,
             repo: document.getElementById('repo').value || '#',
             live: document.getElementById('live').value || '#',
@@ -34,9 +25,9 @@ async function agregarProyecto() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(nuevo)
         });
-
-        if (res.ok) {
-            alert("Proyecto guardado directamente en la raíz y MongoDB");
+        
+        if(res.ok) {
+            alert("✓ Proyecto guardado");
             location.reload();
         }
     };
@@ -44,7 +35,7 @@ async function agregarProyecto() {
 }
 
 async function eliminarProyecto(id) {
-    if (confirm('¿Eliminar proyecto?')) {
+    if (confirm('¿Eliminar?')) {
         await fetch(`${API}eliminar&id=${id}`, { method: 'DELETE' });
         location.reload();
     }
