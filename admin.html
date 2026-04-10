@@ -40,18 +40,34 @@
 <script src="script.js"></script>
 <script>
     async function cargarAdmin() {
-        const res = await fetch('/peticiones?accion=listar');
+    try {
+        // Cambiamos la ruta para que coincida con vercel.json e index.js
+        const res = await fetch('/api?accion=listar'); 
+        
+        if (!res.ok) throw new Error("Error en el servidor");
+        
         const proyectos = await res.json();
         const lista = document.getElementById('admin-lista');
 
+        if (proyectos.length === 0) {
+            lista.innerHTML = '<p style="color:gray; padding:20px;">No hay proyectos en la base de datos.</p>';
+            return;
+        }
+
         lista.innerHTML = proyectos.map(p => `
-            <div class="admin-card">
-                <h4>${p.titulo}</h4>
-                <button class="btn btn-danger" onclick="eliminarProyecto('${p._id}')">Eliminar 🗑️</button>
+            <div class="admin-card" style="border:1px solid #333; margin-bottom:10px; padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <strong style="color:white;">${p.titulo}</strong>
+                    <br><small style="color:gray;">${p.fecha}</small>
+                </div>
+                <button class="btn btn-danger" onclick="eliminarProyecto('${p._id}')" style="background:#ff4444; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Eliminar 🗑️</button>
             </div>
         `).join('');
+    } catch (err) {
+        console.error("Fallo al listar:", err);
+        document.getElementById('admin-lista').innerHTML = '<p style="color:red;">Error al conectar con MongoDB.</p>';
     }
-    document.addEventListener('DOMContentLoaded', cargarAdmin);
+}
 </script>
 </body>
 </html>
