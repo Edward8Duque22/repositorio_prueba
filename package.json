@@ -1,8 +1,7 @@
 {
-  "name": "archivo-creativo-vercel",
+  "name": "repositorio-proyectos",
   "version": "1.0.0",
   "dependencies": {
     "mongodb": "^6.5.0"
   }
 }
-
