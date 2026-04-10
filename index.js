@@ -3,26 +3,22 @@ const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
 
 export default async function handler(req, res) {
-    const { method } = req;
-    const { accion } = req.query;
+    const { method, query } = req;
+    const { accion, h } = query; // "h" será el hash que enviamos por la URL
 
     try {
         await client.connect();
         const db = client.db('archivo_creativo');
         const proyectos = db.collection('proyectos');
 
-        if (accion === 'login' && method === 'POST') {
-            // Leemos el cuerpo de la petición de forma segura
-            let body = req.body;
-            if (typeof body === 'string') body = JSON.parse(body);
-
-            const hashEnviado = body.hash;
+        // LOGIN REFORZADO
+        if (accion === 'login') {
             const hashCorrecto = "c0e1cd8fc8386315b37205f95cd4918b8820715968f4b0c6bd910ce0c78045ba";
-
-            if (hashEnviado === hashCorrecto) {
+            
+            if (h === hashCorrecto) {
                 return res.status(200).json({ success: true });
             } else {
-                return res.status(401).json({ success: false, error: "Hash incorrecto" });
+                return res.status(401).json({ success: false });
             }
         }
 
@@ -32,14 +28,13 @@ export default async function handler(req, res) {
         }
 
         if (accion === 'guardar' && method === 'POST') {
-            let body = req.body;
-            if (typeof body === 'string') body = JSON.parse(body);
+            const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
             await proyectos.insertOne(body);
             return res.status(200).json({ success: true });
         }
 
         if (accion === 'eliminar' && method === 'DELETE') {
-            await proyectos.deleteOne({ _id: new ObjectId(req.query.id) });
+            await proyectos.deleteOne({ _id: new ObjectId(query.id) });
             return res.status(200).json({ success: true });
         }
 
