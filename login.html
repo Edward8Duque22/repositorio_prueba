@@ -15,27 +15,29 @@
 
     <script>
         async function validarAcceso() {
-            const pass = document.getElementById('clave').value;
-            // Genera el código hash de la clave escrita
-            const hash = CryptoJS.SHA256(pass).toString();
+    const pass = document.getElementById('clave').value;
+    if (!pass) return;
 
-            try {
-                const res = await fetch('/api/peticion?accion=login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ hash: hash })
-                });
+    // Convertimos 12345 en hash
+    const hash = CryptoJS.SHA256(pass).toString();
 
-                if (res.ok) {
-                    localStorage.setItem('admin_auth', 'true');
-                    window.location.href = 'admin.html';
-                } else {
-                    alert("Contraseña incorrecta en el servidor.");
-                }
-            } catch (err) {
-                alert("Error de conexión. Revisa que Vercel esté Online.");
-            }
+    try {
+        // Enviamos el hash como parámetro "h" en la URL
+        const res = await fetch(`/api/peticion?accion=login&h=${hash}`, {
+            method: 'GET' // Usamos GET para que sea directo
+        });
+
+        if (res.ok) {
+            localStorage.setItem('admin_auth', 'true');
+            window.location.href = 'admin.html';
+        } else {
+            alert("La clave no es correcta.");
         }
+    } catch (err) {
+        alert("Error crítico de conexión.");
+    }
+        }
+        
     </script>
 </body>
 </html>
