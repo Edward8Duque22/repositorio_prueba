@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
         if (accion === 'login' && method === 'POST') {
             const { hash } = req.body;
-            if (hash === "c0e1cd8fc8386315b37205f95cd4918b8820715968f4b0c6bd910ce0c78045ba") {
+            if (hash === "0de9ebb2d149151b9d9671cb653be33cbb4b1e1269404e3575f5d242efe3c67e) {
                 return res.status(200).json({ success: true });
             }
             return res.status(401).json({ success: false });
