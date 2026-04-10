@@ -1,44 +1,45 @@
-const API = '/api/?accion='; // Ruta unificada para Vercel
+const API_BASE = '/api/?accion=';
 
-async function cargarProyectos() {
-    const res = await fetch(`${API}listar`);
-    return await res.json();
+async function validarAcceso() {
+    const p = document.getElementById('clave').value;
+    const hash = CryptoJS.SHA256(p).toString();
+    
+    const res = await fetch(`${API_BASE}login&h=${hash}`);
+    if (res.ok) {
+        localStorage.setItem('admin_auth', 'true');
+        window.location.href = 'admin.html';
+    } else {
+        alert("Contraseña incorrecta");
+    }
 }
 
 async function agregarProyecto() {
-    const foto = document.getElementById('foto').files[0];
-    if(!foto) return alert("Por favor selecciona una imagen");
+    const fotoFile = document.getElementById('foto').files[0];
+    if(!fotoFile) return alert("Selecciona una foto");
 
     const reader = new FileReader();
     reader.onload = async (e) => {
-        const nuevo = {
+        const datos = {
             titulo: document.getElementById('titulo').value,
             fecha: document.getElementById('fecha').value,
             img: e.target.result,
-            repo: document.getElementById('repo').value || '#',
-            live: document.getElementById('live').value || '#',
-            desc: document.getElementById('desc').value || ''
+            repo: document.getElementById('repo').value,
+            live: document.getElementById('live').value,
+            desc: document.getElementById('desc').value
         };
 
-        const res = await fetch(`${API}guardar`, {
+        const res = await fetch(`${API_BASE}guardar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(nuevo)
+            body: JSON.stringify(datos)
         });
-        
+
         if(res.ok) {
-            alert("✓ Guardado con éxito");
+            alert("Proyecto guardado");
             location.reload();
         } else {
-            alert("Error al guardar");
+            alert("Error al guardar en el servidor");
         }
     };
-    reader.readAsDataURL(foto);
-}
-
-async function eliminarProyecto(id) {
-    if (confirm('¿Estás seguro de eliminar este proyecto?')) {
-        await fetch(`${API}eliminar&id=${id}`, { method: 'DELETE' });
-        location.reload();
-    }
+    reader.readAsDataURL(fotoFile);
 }
