@@ -1,0 +1,49 @@
+:root {
+    --bg: #0d0e12;
+    --surface: #13151c;
+    --accent: #e8ff5a;
+    --text: #e8eaf0;
+    --text-muted: #6b7280;
+    --border: #ffffff0f;
+    --radius: 14px;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    margin: 0;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.card img { width: 100%; height: 200px; object-fit: cover; }
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-accent { background: var(--accent); color: var(--bg); }
+.btn-danger { background: #f87171; color: white; }
+
+/* ... resto de tus estilos ... */
+
