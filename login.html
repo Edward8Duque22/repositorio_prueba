@@ -2,42 +2,28 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Acceso — Archivo Creativo</title>
+    <title>Login</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 <body>
-    <div class="login-card">
-        <h2>Ingresar</h2>
-        <input type="password" id="clave" placeholder="Escribe 12345">
-        <button onclick="validarAcceso()">Entrar</button>
+    <div class="login-container">
+        <h2>Panel Administrativo</h2>
+        <input type="password" id="clave" placeholder="Contraseña">
+        <button onclick="validar()">Entrar</button>
     </div>
-
     <script>
-        async function validarAcceso() {
-    const pass = document.getElementById('clave').value;
-    if (!pass) return;
-
-    // Convertimos 12345 en hash
-    const hash = CryptoJS.SHA256(pass).toString();
-
-    try {
-        // Enviamos el hash como parámetro "h" en la URL
-        const res = await fetch(`/api/peticion?accion=login&h=${hash}`, {
-            method: 'GET' // Usamos GET para que sea directo
-        });
-
-        if (res.ok) {
-            localStorage.setItem('admin_auth', 'true');
-            window.location.href = 'admin.html';
-        } else {
-            alert("La clave no es correcta.");
+        async function validar() {
+            const p = document.getElementById('clave').value;
+            const h = CryptoJS.SHA256(p).toString();
+            const res = await fetch(`/api/?accion=login&h=${h}`);
+            if (res.ok) {
+                localStorage.setItem('admin_auth', 'true');
+                window.location.href = 'admin.html';
+            } else {
+                alert("Clave incorrecta");
+            }
         }
-    } catch (err) {
-        alert("Error crítico de conexión.");
-    }
-        }
-        
     </script>
 </body>
 </html>
