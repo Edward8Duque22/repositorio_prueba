@@ -1,5 +1,5 @@
 // Ahora apuntamos al "rewrite" que definimos en vercel.json
-const API = '/backend?accion=';
+const API = '/peticiones?accion=';
 
 async function cargarProyectos() {
     const res = await fetch(`${API}listar`);
