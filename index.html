@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archivo Creativo — Repositorio</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+    <div class="header-brand">
+        <div class="logo-mark">📁</div>
+        <div>
+            <h1>Archivo Creativo</h1>
+            <p>REPOSITORIO PERSONAL</p>
+        </div>
+    </div>
+    <div class="header-right">
+        <span id="header-count" style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--text-muted);"></span>
+    </div>
+</header>
+
+<div class="hero">
+    <div class="hero-tag">Proyectos</div>
+    <h2>Mis <em>creaciones</em><br>y trabajo.</h2>
+</div>
+
+<div class="container">
+    <div id="proyectos-grid" class="grid">
+        </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    async function renderizar() {
+        const grid = document.getElementById('proyectos-grid');
+        const countEl = document.getElementById('header-count');
+        
+        const proyectos = await cargarProyectos();
+        countEl.textContent = `TOTAL_ARCHIVOS: ${proyectos.length}`;
+
+        if (proyectos.length === 0) {
+            grid.innerHTML = '<div class="empty-state"><p>No hay proyectos disponibles.</p></div>';
+            return;
+        }
+
+        grid.innerHTML = proyectos.map(p => `
+            <div class="card">
+                <div class="card-thumb">
+                    <img src="${p.img}" alt="${p.titulo}">
+                    <div class="card-thumb-overlay">
+                        <a href="${p.live}" target="_blank" class="btn btn-accent">🚀 Demo</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h3>${p.titulo}</h3>
+                    <p class="desc">${p.desc || ''}</p>
+                </div>
+            </div>`).join('');
+    }
+    document.addEventListener('DOMContentLoaded', renderizar);
+</script>
+</body>
+</html>
+
