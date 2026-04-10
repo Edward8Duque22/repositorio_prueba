@@ -1,7 +1,6 @@
 {
   "name": "repositorio-proyectos",
   "version": "1.0.0",
-  "description": "Repositorio organizado por fechas",
   "main": "index.js",
   "dependencies": {
     "mongodb": "^6.5.0"
