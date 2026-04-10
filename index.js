@@ -11,31 +11,36 @@ export default async function handler(req, res) {
         const db = client.db('archivo_creativo');
         const proyectos = db.collection('proyectos');
 
+        // Lógica de Login
+        if (accion === 'login' && method === 'POST') {
+            const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+            // El hash de la clave "Neiva200208"
+            if (body.hash === "dbb4f2edde8ba5dd237c1bab5b89519350393f7ea738ac6f7b482875 36e948b3) {
+                return res.status(200).json({ success: true });
+            }
+            return res.status(401).json({ success: false });
+        }
+
+        // Listar proyectos
         if (accion === 'listar') {
             const data = await proyectos.find({}).sort({ fecha: -1 }).toArray();
             return res.status(200).json(data);
         }
 
+        // Guardar proyecto
         if (accion === 'guardar' && method === 'POST') {
-            await proyectos.insertOne(req.body);
+            const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+            await proyectos.insertOne(body);
             return res.status(200).json({ success: true });
         }
 
+        // Eliminar proyecto
         if (accion === 'eliminar' && method === 'DELETE') {
             await proyectos.deleteOne({ _id: new ObjectId(query.id) });
             return res.status(200).json({ success: true });
         }
 
-        if (accion === 'login' && method === 'POST') {
-    // Aseguramos que el servidor lea bien los datos enviados
-    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-    
-    // Comparamos el hash recibido con el de la clave "12345"
-    if (body.hash === "c0e1cd8fc8386315b37205f95cd4918b8820715968f4b0c6bd910ce0c78045ba") {
-        return res.status(200).json({ success: true });
-    } else {
-        return res.status(401).json({ success: false });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        return res.status(500).json({ error: e.message });
     }
 }
