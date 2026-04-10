@@ -1,4 +1,4 @@
-const API = '/api/?accion=';
+const API = '/api/?accion='; // Ruta unificada para Vercel
 
 async function cargarProyectos() {
     const res = await fetch(`${API}listar`);
@@ -7,7 +7,7 @@ async function cargarProyectos() {
 
 async function agregarProyecto() {
     const foto = document.getElementById('foto').files[0];
-    if(!foto) return alert("Sube una imagen");
+    if(!foto) return alert("Por favor selecciona una imagen");
 
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -27,15 +27,17 @@ async function agregarProyecto() {
         });
         
         if(res.ok) {
-            alert("✓ Proyecto guardado");
+            alert("✓ Guardado con éxito");
             location.reload();
+        } else {
+            alert("Error al guardar");
         }
     };
     reader.readAsDataURL(foto);
 }
 
 async function eliminarProyecto(id) {
-    if (confirm('¿Eliminar?')) {
+    if (confirm('¿Estás seguro de eliminar este proyecto?')) {
         await fetch(`${API}eliminar&id=${id}`, { method: 'DELETE' });
         location.reload();
     }
